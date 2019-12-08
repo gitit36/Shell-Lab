@@ -254,6 +254,35 @@ int builtin_cmd(char **argv)
  */
 void do_bgfg(char **argv) 
 {
+    char *x = argv[1];
+
+    // if ID does not exist
+    if(!x){
+        printf("Command requires JID or PID argument\n");
+        return;
+    }
+
+    //if JID
+    if(x[0]=="%"){
+        if(!(getjobjid(jobs,atoi(&x[1])))){
+            printf("No corresponding job exists\n");
+            return;
+        }
+    }
+
+    //if PID
+    else if(isdigit(x[0])){
+        if(!(getjobpid(jobs,atoi(x)))){
+            printf("No corresponding process exists\n");
+            return;
+        }
+    }
+
+    //if the argument is neither a JID or PID
+    else{
+        printf("Invalid argument for JID or PID\n");
+    }
+
     return;
 }
 
@@ -262,6 +291,17 @@ void do_bgfg(char **argv)
  */
 void waitfg(pid_t pid)
 {
+    struct job_t *j = getjobpid(jobs,pid);
+
+    //Checking validity for PID
+    if(!pid) return;
+
+    //if 
+    if(j->state == FG){
+        while(pid == fgpid(jobs)){
+            sleep(0);
+        }
+    }
     return;
 }
 
